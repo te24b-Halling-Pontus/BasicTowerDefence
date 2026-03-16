@@ -1,4 +1,23 @@
-﻿
+﻿using Raylib_cs;
+
+int screenHeight = 500;
+int screenWidth = 800;
+int cellsize = 50; //50x50
+
+Raylib.InitWindow(screenWidth, screenHeight, "Grid Example");
+Raylib.SetTargetFPS(60);
+while (!Raylib.WindowShouldClose())
+{
+    
+}
+
+
+
+
+
+
+
+
 List<(int x, int y)> path = new List<(int x, int y)>
 {
     (0,3), (1,3), (2,3),
@@ -89,4 +108,9 @@ static void BoardBuilder(List<(int, int)> path)
         Console.WriteLine();
     }
 }
+
+
+
+
+
 Console.ReadLine();
