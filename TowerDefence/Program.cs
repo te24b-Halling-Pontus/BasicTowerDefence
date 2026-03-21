@@ -1,17 +1,56 @@
 ﻿using Raylib_cs;
+using CellInfo;
+using System.ComponentModel.DataAnnotations;
 
+bool firstTime = true;
 int screenHeight = 500;
 int screenWidth = 800;
-int cellsize = 50; //50x50
+int cellSize = 50;
+int cellNumber = 0;
 
-Raylib.InitWindow(screenWidth, screenHeight, "Grid Example");
+List<CellInfoClass> cellInfoList = [];
+
+
+Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
 while (!Raylib.WindowShouldClose())
 {
-    
+    Raylib.BeginDrawing();
+    Raylib.ClearBackground(Color.Green);
+    for (int y = 0; y < screenHeight; y += cellSize)
+    {
+        for (int x = 0; x < screenWidth; x += cellSize)
+        {
+            cellNumber++;
+            Raylib.DrawRectangleLines(x, y, cellSize, cellSize, Color.White);
+            if (firstTime)
+            {
+                cellInfoList.Add(new CellInfoClass(x, y, cellNumber, Color.Green));
+            }
+            else
+            {
+                Raylib.DrawRectangle(x, y, cellSize, cellSize, cellInfoList[cellNumber - 1].CellColor);
+            }
+        }
+    }
+    Raylib.EndDrawing();
+    cellNumber = 0;
+    firstTime = false;
 }
-
-
+static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList)
+{
+    for (int i = 0; i < cellInfoList.Count; i++)
+    {
+        if (cellInfoList[i].X <= xCord && cellInfoList[i].X + cellSize > xCord)
+        {
+            if (cellInfoList[i].Y <= yCord && cellInfoList[i].Y + cellSize > yCord)
+            {
+                return (cellInfoList[i].cellNumber);
+            }
+        }
+    }
+    return (0);
+}
 
 
 
@@ -40,19 +79,20 @@ static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
 }
 static int LevelSwitcher(ConsoleKey pressKey, int minLevel, int maxLevel, int level)
 {
-    if (pressKey == ConsoleKey.DownArrow)
+    switch (pressKey)
     {
-        if (level < maxLevel)
-        {
-            level++;
-        }
-    }
-    else if (pressKey == ConsoleKey.UpArrow)
-    {
-        if (level > minLevel)
-        {
-            level--;
-        }
+        case ConsoleKey.DownArrow:
+            if (level < maxLevel)
+            {
+                level++;
+            }
+            break;
+        case ConsoleKey.UpArrow:
+            if (level > minLevel)
+            {
+                level--;
+            }
+            break;
     }
     return (level);
 }
@@ -87,27 +127,27 @@ static void MenuPrinter(List<string> listOfMenuItem, int level)
 //     return (maxCordinateX, maxCordinateY);
 // }
 
-static void BoardBuilder(List<(int, int)> path)
-{
-    int[,] board = new int[10, 15];
+// static void BoardBuilder(List<(int, int)> path)
+// {
+//     int[,] board = new int[10, 15];
 
-    for (int y = 0; y <= board.GetLength(1); y++)
-    {
-        for (int x = 0; x <= board.GetLength(0); x++)
-        {
-            if (path.Contains((x, y)))
-            {
-                Console.BackgroundColor = ConsoleColor.Yellow;
-            }
-            else
-            {
-                Console.BackgroundColor = ConsoleColor.Blue;
-            }
-            Console.Write("x");
-        }
-        Console.WriteLine();
-    }
-}
+//     for (int y = 0; y <= board.GetLength(1); y++)
+//     {
+//         for (int x = 0; x <= board.GetLength(0); x++)
+//         {
+//             if (path.Contains((x, y)))
+//             {
+//                 Console.BackgroundColor = ConsoleColor.Yellow;
+//             }
+//             else
+//             {
+//                 Console.BackgroundColor = ConsoleColor.Blue;
+//             }
+//             Console.Write("x");
+//         }
+//         Console.WriteLine();
+//     }
+// }
 
 
 
