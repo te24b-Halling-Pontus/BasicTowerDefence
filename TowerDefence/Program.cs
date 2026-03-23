@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using CellInfo;
 using System.ComponentModel.DataAnnotations;
+using System.Numerics;
 
 bool firstTime = true;
 int screenHeight = 500;
@@ -15,6 +16,7 @@ Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
 while (!Raylib.WindowShouldClose())
 {
+    blockHigheLighter(cellInfoList);
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Green);
     for (int y = 0; y < screenHeight; y += cellSize)
@@ -50,6 +52,20 @@ static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<Ce
         }
     }
     return (0);
+}
+static void blockHigheLighter(List<CellInfoClass> cellInfoList)
+{
+    int mousePosX = Raylib.GetMouseX();
+    int mousePosY = Raylib.GetMouseY();
+    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList) - 1;
+    int oldMouseCell = 1;
+    Math.Max(wichCellMouseOn, 1);
+    if (oldMouseCell != wichCellMouseOn)
+    {
+        cellInfoList[oldMouseCell].CellColor = Color.Green;
+        cellInfoList[wichCellMouseOn].CellColor = new Color(102, 255, 104, 255);
+        oldMouseCell = wichCellMouseOn;
+    }
 }
 
 
