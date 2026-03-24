@@ -1,22 +1,27 @@
 ﻿using Raylib_cs;
 using CellInfo;
-using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 
+//skärm relaterade datatyper
 bool firstTime = true;
 int screenHeight = 500;
 int screenWidth = 800;
+//cell relaterade datatyper
 int cellSize = 50;
-int cellNumber = 0;
-
+int cellNumber = -1;
 List<CellInfoClass> cellInfoList = [];
+//mus relaterade datatyper
+bool haveMouseBenPressed = false;
+int oldMouseCell = 0;
+int mousePosX = Raylib.GetMouseX();
+int mousePosY = Raylib.GetMouseY();
+
 
 
 Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
 while (!Raylib.WindowShouldClose())
 {
-    blockHigheLighter(cellInfoList);
+    blockHigheLighter(cellInfoList, ref oldMouseCell);
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Green);
     for (int y = 0; y < screenHeight; y += cellSize)
@@ -38,6 +43,19 @@ while (!Raylib.WindowShouldClose())
     Raylib.EndDrawing();
     cellNumber = 0;
     firstTime = false;
+    ClickChecker(haveMouseBenPressed);
+}
+static void ClickChecker(bool haveMouseBenPressed)
+{
+    haveMouseBenPressed = Raylib.IsMouseButtonPressed(MouseButton.Left);
+    if (haveMouseBenPressed)
+    {
+        TowerPlacer();
+    }
+}
+static void TowerPlacer()
+{
+    
 }
 static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList)
 {
@@ -47,38 +65,25 @@ static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<Ce
         {
             if (cellInfoList[i].Y <= yCord && cellInfoList[i].Y + cellSize > yCord)
             {
-                return (cellInfoList[i].cellNumber);
+                return (cellInfoList[i].CellNumber);
             }
         }
     }
     return (0);
 }
-static void blockHigheLighter(List<CellInfoClass> cellInfoList)
+static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell)
 {
-    int mousePosX = Raylib.GetMouseX();
-    int mousePosY = Raylib.GetMouseY();
-    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList) - 1;
-    int oldMouseCell = 1;
-    Math.Max(wichCellMouseOn, 1);
+    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
+    wichCellMouseOn = Math.Max(wichCellMouseOn, 0);
+    oldMouseCell = Math.Max(oldMouseCell, 0);
     if (oldMouseCell != wichCellMouseOn)
     {
-        cellInfoList[oldMouseCell].CellColor = Color.Green;
         cellInfoList[wichCellMouseOn].CellColor = new Color(102, 255, 104, 255);
+        cellInfoList[oldMouseCell].CellColor = Color.Green;
         oldMouseCell = wichCellMouseOn;
     }
 }
 
-
-
-
-
-
-List<(int x, int y)> path = new List<(int x, int y)>
-{
-    (0,3), (1,3), (2,3),
-    (3,3), (3,4), (4,4),
-    (5,4), (5,5), (5,6)
-};
 List<string> listOfMenuItem = ["hem", "in", "r"];
 Menu(0, 2, listOfMenuItem);
 static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
@@ -126,6 +131,7 @@ static void MenuPrinter(List<string> listOfMenuItem, int level)
         }
     }
 }
+
 // kod som kanske ska användas men kom på att det är jätte dump för man vill inte
 // bara se en inzomad skit av banan vilket det ser ut som.
 // static (int, int) CordinateCalkylator(List<(int x, int y)> path)
