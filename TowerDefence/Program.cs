@@ -1,5 +1,6 @@
 ﻿using Raylib_cs;
 using CellInfo;
+using System.Runtime.InteropServices;
 
 //skärm relaterade datatyper
 bool firstTime = true;
@@ -9,21 +10,22 @@ int screenWidth = 800;
 int cellSize = 50;
 int cellNumber = -1;
 List<CellInfoClass> cellInfoList = [];
+List<(int, int)> pathEasy1 = [(150, 0), (150, 50), (150, 100), (150, 150), (150, 200), (200, 200), (250, 200), (300, 200), (350, 200), (400, 200), (450, 200), (500, 200), (500, 150), (500, 50), (500, 100), (550, 50), (600, 50), (650, 50), (650, 100), (650, 150), (650, 200), (650, 250), (650, 300), (650, 350), (700, 350), (750, 350)];
 //mus relaterade datatyper
 bool haveMouseBenPressed = false;
 int oldMouseCell = 0;
-int mousePosX = Raylib.GetMouseX();
-int mousePosY = Raylib.GetMouseY();
-
-
+int temp = 1;
 
 Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
 while (!Raylib.WindowShouldClose())
 {
-    blockHigheLighter(cellInfoList, ref oldMouseCell);
+    int mousePosX = Raylib.GetMouseX();
+    int mousePosY = Raylib.GetMouseY();
+    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
+    blockHigheLighter(cellInfoList, ref oldMouseCell, mousePosX, mousePosY, wichCellMouseOn, haveMouseBenPressed);
     Raylib.BeginDrawing();
-    Raylib.ClearBackground(Color.Green);
+    Raylib.ClearBackground(Color.White);
     for (int y = 0; y < screenHeight; y += cellSize)
     {
         for (int x = 0; x < screenWidth; x += cellSize)
@@ -41,22 +43,16 @@ while (!Raylib.WindowShouldClose())
         }
     }
     Raylib.EndDrawing();
+    temp++;
     cellNumber = 0;
     firstTime = false;
-    ClickChecker(haveMouseBenPressed);
-}
-static void ClickChecker(bool haveMouseBenPressed)
-{
-    haveMouseBenPressed = Raylib.IsMouseButtonPressed(MouseButton.Left);
-    if (haveMouseBenPressed)
+    for (int i = 0; i < pathEasy1.Count; i++)
     {
-        TowerPlacer();
+        int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
+        cellInfoList[tempCellNumber].CellColor = Color.Brown;
     }
 }
-static void TowerPlacer()
-{
-    
-}
+
 static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList)
 {
     for (int i = 0; i < cellInfoList.Count; i++)
@@ -71,21 +67,38 @@ static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<Ce
     }
     return (0);
 }
-static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell)
+static (int, int) CellNumberToCordConverter(List<CellInfoClass> cellInfoList, int cellNumber)
 {
-    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
+    return (cellInfoList[cellNumber].X, cellInfoList[cellNumber].Y);
+}
+static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell, int mousePosX, int mousePosY, int wichCellMouseOn, bool haveMouseBenPressed)
+{
     wichCellMouseOn = Math.Max(wichCellMouseOn, 0);
     oldMouseCell = Math.Max(oldMouseCell, 0);
+    ClickChecker(haveMouseBenPressed, cellInfoList, wichCellMouseOn, mousePosX, mousePosY, ref oldMouseCell);
     if (oldMouseCell != wichCellMouseOn)
     {
-        cellInfoList[wichCellMouseOn].CellColor = new Color(102, 255, 104, 255);
-        cellInfoList[oldMouseCell].CellColor = Color.Green;
+        cellInfoList[wichCellMouseOn].CellColor = Raylib.ColorAlpha(cellInfoList[wichCellMouseOn].CellColor, 0.5f);
+        cellInfoList[oldMouseCell].CellColor = Raylib.ColorAlpha(cellInfoList[oldMouseCell].CellColor, 1);
         oldMouseCell = wichCellMouseOn;
     }
 }
+static void ClickChecker(bool haveMouseBenPressed, List<CellInfoClass> cellInfoList, int wichCellMouseOn, int mousePosX, int mousePosY, ref int oldMouseCell)
+{
+    haveMouseBenPressed = Raylib.IsMouseButtonPressed(MouseButton.Left);
+    if (haveMouseBenPressed)
+    {
+        TowerPlacer(cellInfoList, wichCellMouseOn, mousePosX, mousePosY, ref oldMouseCell);
+    }
+}
+static void TowerPlacer(List<CellInfoClass> cellInfoList, int wichCellMouseOn, int mousePosX, int mousePosY, ref int oldMouseCell)
+{
+    cellInfoList[wichCellMouseOn].CellColor = Color.Brown;
+    oldMouseCell = wichCellMouseOn;
+    Console.WriteLine(wichCellMouseOn);
+}
 
-List<string> listOfMenuItem = ["hem", "in", "r"];
-Menu(0, 2, listOfMenuItem);
+
 static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
 {
     int level = 0;
@@ -131,46 +144,6 @@ static void MenuPrinter(List<string> listOfMenuItem, int level)
         }
     }
 }
-
-// kod som kanske ska användas men kom på att det är jätte dump för man vill inte
-// bara se en inzomad skit av banan vilket det ser ut som.
-// static (int, int) CordinateCalkylator(List<(int x, int y)> path)
-// {
-//     List<int> pathX = [];
-//     List<int> pathY = [];
-
-//     for (int i = 0; i < path.Count; i++)
-//     {
-//         pathX.Add(path[i].x);
-//         pathY.Add(path[i].y);
-//     }
-//     int maxCordinateX = pathX.Max();
-//     int maxCordinateY = pathY.Max();
-//     return (maxCordinateX, maxCordinateY);
-// }
-
-// static void BoardBuilder(List<(int, int)> path)
-// {
-//     int[,] board = new int[10, 15];
-
-//     for (int y = 0; y <= board.GetLength(1); y++)
-//     {
-//         for (int x = 0; x <= board.GetLength(0); x++)
-//         {
-//             if (path.Contains((x, y)))
-//             {
-//                 Console.BackgroundColor = ConsoleColor.Yellow;
-//             }
-//             else
-//             {
-//                 Console.BackgroundColor = ConsoleColor.Blue;
-//             }
-//             Console.Write("x");
-//         }
-//         Console.WriteLine();
-//     }
-// }
-
 
 
 

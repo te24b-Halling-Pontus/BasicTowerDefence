@@ -1,5 +1,7 @@
 namespace Tower;
 
+
+using CellInfo;
 class TowerStats
 {
     public int X;
@@ -10,5 +12,6 @@ class TowerStats
         this.X = X;
         this.Y = Y;
         this.Damage = Damage;
+        
     }
 }
