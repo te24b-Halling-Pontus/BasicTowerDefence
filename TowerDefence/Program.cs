@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using CellInfo;
-using System.Runtime.InteropServices;
+using BasicEnemy;
+using System.Numerics;
 
 //skärm relaterade datatyper
 bool firstTime = true;
@@ -14,7 +15,10 @@ List<(int, int)> pathEasy1 = [(150, 0), (150, 50), (150, 100), (150, 150), (150,
 //mus relaterade datatyper
 bool haveMouseBenPressed = false;
 int oldMouseCell = 0;
-int temp = 1;
+//fiende grejor
+
+List<BasicEnemyClass> basicEnemy = [];
+basicEnemy.Add(new BasicEnemyClass(100, 10, new Vector2(150 , 0)));
 
 Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
@@ -42,8 +46,11 @@ while (!Raylib.WindowShouldClose())
             }
         }
     }
+    foreach (var enemy in basicEnemy)
+    {
+        enemy.Test(pathEasy1);
+    }
     Raylib.EndDrawing();
-    temp++;
     cellNumber = 0;
     firstTime = false;
     for (int i = 0; i < pathEasy1.Count; i++)
@@ -51,6 +58,7 @@ while (!Raylib.WindowShouldClose())
         int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
         cellInfoList[tempCellNumber].CellColor = Color.Brown;
     }
+    
 }
 
 static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList)
