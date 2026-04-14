@@ -11,14 +11,16 @@ int screenWidth = 800;
 int cellSize = 50;
 int cellNumber = -1;
 List<CellInfoClass> cellInfoList = [];
-List<(int, int)> pathEasy1 = [(150, 0), (150, 50), (150, 100), (150, 150), (150, 200), (200, 200), (250, 200), (300, 200), (350, 200), (400, 200), (450, 200), (500, 200), (500, 150), (500, 50), (500, 100), (550, 50), (600, 50), (650, 50), (650, 100), (650, 150), (650, 200), (650, 250), (650, 300), (650, 350), (700, 350), (750, 350)];
+List<(int, int)> pathEasy1 = [(150, 0), (150, 50), (150, 100), (150, 150), (150, 200), (200, 200), (250, 200), (300, 200), (350, 200), (400, 200), (450, 200), (500, 200), (500, 150), (500, 100), (500, 50), (550, 50), (600, 50), (650, 50), (650, 100), (650, 150), (650, 200), (650, 250), (650, 300), (650, 350), (700, 350), (750, 350), (800, 350)];
 //mus relaterade datatyper
 bool haveMouseBenPressed = false;
 int oldMouseCell = 0;
 //fiende grejor
-
+List<Vector2> enemyPos = [new Vector2(1f, 1f)];
 List<BasicEnemyClass> basicEnemy = [];
-basicEnemy.Add(new BasicEnemyClass(100, 10, new Vector2(150 , 0)));
+basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
+basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
+basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
 
 Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
@@ -46,9 +48,13 @@ while (!Raylib.WindowShouldClose())
             }
         }
     }
-    foreach (var enemy in basicEnemy)
+    for (int i = 0; i < basicEnemy.Count; i++)
     {
-        enemy.Test(pathEasy1);
+        if (!basicEnemy[i].Test(pathEasy1))
+        {
+            basicEnemy.RemoveAt(i);
+            i--;
+        }
     }
     Raylib.EndDrawing();
     cellNumber = 0;

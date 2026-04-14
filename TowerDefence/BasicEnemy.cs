@@ -6,10 +6,11 @@ namespace BasicEnemy;
 
 class BasicEnemyClass
 {
+    bool IsAlive = true;
     public int Health;
     public int Speed;
     int PathPos = 0;
-    Vector2 Pos;
+    public Vector2 Pos;
     public BasicEnemyClass(int Health, int Speed, Vector2 Pos)
     {
         this.Health = Health;
@@ -18,19 +19,33 @@ class BasicEnemyClass
     }
 
 
-    public void Test(List<(int, int)> path)
+    public bool Test(List<(int, int)> path)
     {
-        Vector2 nextPos = new Vector2(path[PathPos].Item1, path[PathPos].Item2);
-        Vector2 diretion = nextPos - Pos;
-        if (diretion.Length() > 1f)
+        if (PathPos + 1 == path.Count) // gör så den försviner vid slutet
         {
-            diretion = Vector2.Normalize(diretion);
-            Pos = diretion * Speed / 60;
+            IsAlive = false;
+            return (IsAlive);
         }
-        Raylib.DrawCircleV(Pos, 25, Color.Red);
-        Console.WriteLine("funkar ish");
+        else
+        {
+            Vector2 nextPos = new Vector2(path[PathPos].Item1 + 25, path[PathPos].Item2 + 25); //+25 för då är den i miten av kvadraten
+            Vector2 diretion = nextPos - Pos;
+            if (diretion.Length() > 1f) // kollar så fienden är mer en ett ifrån målet.
+            {
+                diretion = Vector2.Normalize(diretion);
+                Pos += diretion * Speed / 60; // /60 är lite onödigt men jag tänkte att man skulle dela på framsen men man kan ju också bara säka speeden.
+            }
+            else //nyt mål
+            {
+                Pos = nextPos;
+                PathPos++;
+            }
+            Raylib.DrawCircleV(Pos, 25, Color.Red);
+        }
+        return (IsAlive);
     }
 }
+
 
 
 
