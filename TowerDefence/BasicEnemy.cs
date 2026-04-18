@@ -33,7 +33,7 @@ class BasicEnemyClass
             if (diretion.Length() > 1f) // kollar så fienden är mer en ett ifrån målet.
             {
                 diretion = Vector2.Normalize(diretion);
-                Pos += diretion * Speed / 60; // /60 är lite onödigt men jag tänkte att man skulle dela på framsen men man kan ju också bara säka speeden.
+                Pos += diretion * Speed / 60; // 60 är lite onödigt men jag tänkte att man skulle dela på framsen men man kan ju också bara säka speeden.
             }
             else //nyt mål
             {

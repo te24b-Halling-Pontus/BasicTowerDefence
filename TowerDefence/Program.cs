@@ -66,7 +66,6 @@ while (!Raylib.WindowShouldClose())
     }
     
 }
-
 static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList)
 {
     for (int i = 0; i < cellInfoList.Count; i++)
@@ -112,52 +111,51 @@ static void TowerPlacer(List<CellInfoClass> cellInfoList, int wichCellMouseOn, i
     Console.WriteLine(wichCellMouseOn);
 }
 
-
-static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
-{
-    int level = 0;
-    MenuPrinter(listOfMenuItem, level);
-    while (true)
-    {
-        ConsoleKey pressKey = Console.ReadKey(true).Key;
-        level = LevelSwitcher(pressKey, minLevel, maxLevel, level);
-        Console.Clear();
-        MenuPrinter(listOfMenuItem, level);
-    }
-}
-static int LevelSwitcher(ConsoleKey pressKey, int minLevel, int maxLevel, int level)
-{
-    switch (pressKey)
-    {
-        case ConsoleKey.DownArrow:
-            if (level < maxLevel)
-            {
-                level++;
-            }
-            break;
-        case ConsoleKey.UpArrow:
-            if (level > minLevel)
-            {
-                level--;
-            }
-            break;
-    }
-    return (level);
-}
-static void MenuPrinter(List<string> listOfMenuItem, int level)
-{
-    for (int i = 0; i < listOfMenuItem.Count; i++)
-    {
-        if (i == level)
-        {
-            Console.WriteLine($">{listOfMenuItem[i]}<");
-        }
-        else
-        {
-            Console.WriteLine($" {listOfMenuItem[i]}");
-        }
-    }
-}
+// static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
+// {
+//     int level = 0;
+//     MenuPrinter(listOfMenuItem, level);
+//     while (true)
+//     {
+//         ConsoleKey pressKey = Console.ReadKey(true).Key;
+//         level = LevelSwitcher(pressKey, minLevel, maxLevel, level);
+//         Console.Clear();
+//         MenuPrinter(listOfMenuItem, level);
+//     }
+// }
+// static int LevelSwitcher(ConsoleKey pressKey, int minLevel, int maxLevel, int level)
+// {
+//     switch (pressKey)
+//     {
+//         case ConsoleKey.DownArrow:
+//             if (level < maxLevel)
+//             {
+//                 level++;
+//             }
+//             break;
+//         case ConsoleKey.UpArrow:
+//             if (level > minLevel)
+//             {
+//                 level--;
+//             }
+//             break;
+//     }
+//     return (level);
+// }
+// static void MenuPrinter(List<string> listOfMenuItem, int level)
+// {
+//     for (int i = 0; i < listOfMenuItem.Count; i++)
+//     {
+//         if (i == level)
+//         {
+//             Console.WriteLine($">{listOfMenuItem[i]}<");
+//         }
+//         else
+//         {
+//             Console.WriteLine($" {listOfMenuItem[i]}");
+//         }
+//     }
+// }
 
 
 

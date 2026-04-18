@@ -1,17 +1,21 @@
 namespace Tower;
 
-
+using System.Numerics;
 using CellInfo;
 class TowerStats
 {
-    public int X;
-    public int Y;
+    public Vector2 Pos;
+    public int Range;
     public int Damage;
-    public TowerStats(int X, int Y, int Damage)
+    public TowerStats(Vector2 Pos, int Range, int Damage)
     {
-        this.X = X;
-        this.Y = Y;
+        this.Pos = Pos;
+        this.Range = Range;
         this.Damage = Damage;
+    }
+
+    public void TowerShoter()
+    {
         
     }
 }
