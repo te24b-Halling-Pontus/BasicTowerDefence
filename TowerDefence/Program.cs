@@ -27,10 +27,10 @@ Raylib.SetTargetFPS(60);
 while (!Raylib.WindowShouldClose())
 {
     int mousePosX = Raylib.GetMouseX();
-    int mousePosY = Raylib.GetMouseY();
-    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
-    blockHigheLighter(cellInfoList, ref oldMouseCell, mousePosX, mousePosY, wichCellMouseOn, haveMouseBenPressed);
-    Raylib.BeginDrawing();
+int mousePosY = Raylib.GetMouseY();
+int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
+blockHigheLighter(cellInfoList, ref oldMouseCell, mousePosX, mousePosY, wichCellMouseOn, haveMouseBenPressed);
+Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.White);
     for (int y = 0; y < screenHeight; y += cellSize)
     {
@@ -49,21 +49,21 @@ while (!Raylib.WindowShouldClose())
         }
     }
     for (int i = 0; i < basicEnemy.Count; i++)
+{
+    if (!basicEnemy[i].Test(pathEasy1))
     {
-        if (!basicEnemy[i].Test(pathEasy1))
-        {
-            basicEnemy.RemoveAt(i);
-            i--;
-        }
+        basicEnemy.RemoveAt(i);
+        i--;
     }
-    Raylib.EndDrawing();
-    cellNumber = 0;
-    firstTime = false;
-    for (int i = 0; i < pathEasy1.Count; i++)
-    {
-        int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
-        cellInfoList[tempCellNumber].CellColor = Color.Brown;
-    }
+}
+Raylib.EndDrawing();
+cellNumber = 0;
+firstTime = false;
+for (int i = 0; i < pathEasy1.Count; i++)
+{
+    int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
+    cellInfoList[tempCellNumber].CellColor = Color.Brown;
+}
     
 }
 static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList)

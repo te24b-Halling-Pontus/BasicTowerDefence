@@ -9,7 +9,7 @@ class BasicEnemyClass
     bool IsAlive = true;
     public int Health;
     public int Speed;
-    int PathPos = 0;
+    public int PathPos = 0;
     public Vector2 Pos;
     public BasicEnemyClass(int Health, int Speed, Vector2 Pos)
     {
@@ -17,7 +17,6 @@ class BasicEnemyClass
         this.Speed = Speed;
         this.Pos = Pos;
     }
-
 
     public bool Test(List<(int, int)> path)
     {
