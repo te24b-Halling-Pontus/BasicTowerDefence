@@ -8,11 +8,11 @@ class CellInfoClass
     public int Y;
     public int CellNumber;
     public Color CellColor;
-    public CellInfoClass(int X, int Y, int cellNumber, Color CellColor)
+    public CellInfoClass(int x, int y, int cellNumber, Color cellColor)
     {
-        this.X = X;
-        this.Y = Y;
+        this.X = x;
+        this.Y = y;
         this.CellNumber = cellNumber;
-        this.CellColor = CellColor;
+        this.CellColor = cellColor;
     }
 }

@@ -9,32 +9,46 @@ class TowerStats
     public Vector2 Pos;
     public int Range;
     public int Damage;
-    public int hitspeed; // hit speed är beroende på frames 
-    int EnemyNumber = 0;
-    List<int> PosilbleTragets = [];
+    public int Hitspeed; // hit speed är beroende på frames 
+    int enemyNumber = 0;
+    int target;
+    List<int> posilbleTragets = [];
 
-    public TowerStats(Vector2 Pos, int Range, int Damage)
+    public TowerStats(Vector2 pos, int range, int damage, int hitspeed)
     {
-        this.Pos = Pos;
-        this.Range = Range;
-        this.Damage = Damage;
+        this.Pos = pos;
+        this.Range = range;
+        this.Damage = damage;
+        this.Hitspeed = hitspeed;
     }
 
     public void TowerShoter(List<BasicEnemyClass> basicEnemy)
     {
         foreach (var enemy in basicEnemy)
         {
-            float distanceBetwen = Vector2.Distance(Pos, enemy.Pos);
-            if (distanceBetwen < Range)
+            float distanceBetwen = Vector2.Distance(Pos, enemy.Pos); // kollar distansen mellan dem
+            if (distanceBetwen < Range) // kollar om den är inom range
             {
-                PosilbleTragets.Add(EnemyNumber);
+                posilbleTragets.Add(enemyNumber);
             }
-            EnemyNumber++;
+            enemyNumber++;
         }
+        target = WhoIsFirst(basicEnemy, posilbleTragets);
+        basicEnemy[target].IsAlive = false;
     }
-    static int WhoIsFirst()
+    int WhoIsFirst(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
     {
-        
-        return 1;
+        int maxTemp = 0;
+        int temp;
+        for (int i = 0; i < PosilbleTragets.Count; i++) // loopar genom och kollar vilken som är först
+        {
+            temp = basicEnemy[PosilbleTragets[i]].PathPos; 
+            if (maxTemp < temp)
+            {
+                target = PosilbleTragets[i]; 
+                maxTemp = temp;
+            }
+        }
+        return target;
     }
 }
