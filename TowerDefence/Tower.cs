@@ -10,7 +10,6 @@ class TowerStats
     public int Range;
     public int Damage;
     public int Hitspeed; // hit speed är beroende på frames 
-    int enemyNumber = 0;
     int target;
     List<int> posilbleTragets = [];
 
@@ -24,29 +23,39 @@ class TowerStats
 
     public void TowerShoter(List<BasicEnemyClass> basicEnemy)
     {
+        int enemyNumber = 0;
+        posilbleTragets.Clear();
+        bool targetInRange = false;
         foreach (var enemy in basicEnemy)
         {
             float distanceBetwen = Vector2.Distance(Pos, enemy.Pos); // kollar distansen mellan dem
-            if (distanceBetwen < Range) // kollar om den är inom range
+            if (distanceBetwen <= Range) // kollar om den är inom range
             {
                 posilbleTragets.Add(enemyNumber);
+                targetInRange = true;
             }
             enemyNumber++;
         }
-        target = WhoIsFirst(basicEnemy, posilbleTragets);
-        basicEnemy[target].IsAlive = false;
+        if (targetInRange)
+        {
+            target = WhoIsFirst(basicEnemy, posilbleTragets);
+            basicEnemy[target].Health -= Damage;
+        }
     }
     int WhoIsFirst(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
     {
         int maxTemp = 0;
         int temp;
-        for (int i = 0; i < PosilbleTragets.Count; i++) // loopar genom och kollar vilken som är först
+        if (posilbleTragets.Count > 0)
         {
-            temp = basicEnemy[PosilbleTragets[i]].PathPos; 
-            if (maxTemp < temp)
+            for (int i = 0; i <= PosilbleTragets.Count - 1; i++) // loopar genom och kollar vilken som är först
             {
-                target = PosilbleTragets[i]; 
-                maxTemp = temp;
+                temp = basicEnemy[PosilbleTragets[i]].PathPos;
+                if (maxTemp < temp)
+                {
+                    target = PosilbleTragets[i];
+                    maxTemp = temp;
+                }
             }
         }
         return target;
