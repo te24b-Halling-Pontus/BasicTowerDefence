@@ -5,8 +5,8 @@ using System.Numerics;
 using Tower;
 //skärm relaterade datatyper
 bool firstTime = true;
-int screenHeight = 500;
 int screenWidth = 800;
+int screenHeight = 500;
 //cell relaterade datatyper
 int cellSize = 50;
 int cellNumber = -1;
@@ -33,6 +33,24 @@ while (!Raylib.WindowShouldClose())
     blockHigheLighter(cellInfoList, ref oldMouseCell, wichCellMouseOn);
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.White);
+    CellPianter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime);
+    if (firstTime)
+    {
+        for (int i = 0; i < pathEasy1.Count - 1; i++)
+        {
+            int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
+            cellInfoList[tempCellNumber].CellColor = Color.Brown;
+        }
+    }
+    TowerController(basicEnemy, towerStatsList);
+    EnemyController(basicEnemy, pathEasy1);
+    Raylib.EndDrawing();
+    cellNumber = 0;
+    firstTime = false;
+    ClickChecker(cellInfoList, wichCellMouseOn, ref oldMouseCell, towerStatsList, pathEasy1);
+}
+static void CellPianter(List<CellInfoClass> cellInfoList, int screenWidth , int screenHeight, int cellSize, int cellNumber, bool firstTime)
+{
     for (int y = 0; y < screenHeight; y += cellSize)
     {
         for (int x = 0; x < screenWidth; x += cellSize)
@@ -49,17 +67,6 @@ while (!Raylib.WindowShouldClose())
             }
         }
     }
-    TowerController(basicEnemy, towerStatsList);
-    EnemyController(basicEnemy, pathEasy1);
-    Raylib.EndDrawing();
-    cellNumber = 0;
-    firstTime = false;
-    for (int i = 0; i < pathEasy1.Count - 1; i++)
-    {
-        int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
-        cellInfoList[tempCellNumber].CellColor = Color.Brown;
-    }
-    ClickChecker(cellInfoList, wichCellMouseOn, ref oldMouseCell, towerStatsList, pathEasy1);
 }
 static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> pathEasy1)
 {
@@ -99,7 +106,6 @@ static (float, float) CellNumberToCordConverter(List<CellInfoClass> cellInfoList
 }
 static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell, int wichCellMouseOn)
 {
-
     if (oldMouseCell != wichCellMouseOn)
     {
         cellInfoList[wichCellMouseOn].CellColor = Raylib.ColorAlpha(cellInfoList[wichCellMouseOn].CellColor, 0.5f);
@@ -145,7 +151,7 @@ static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn
 }
 static void WaveMaker()
 {
-    
+
 }
 
 // static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
