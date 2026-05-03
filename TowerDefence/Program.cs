@@ -3,7 +3,6 @@ using CellInfo;
 using BasicEnemy;
 using System.Numerics;
 using Tower;
-
 //skärm relaterade datatyper
 bool firstTime = true;
 int screenHeight = 500;
@@ -60,8 +59,7 @@ while (!Raylib.WindowShouldClose())
         int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
         cellInfoList[tempCellNumber].CellColor = Color.Brown;
     }
-    ClickChecker(cellInfoList, wichCellMouseOn, ref oldMouseCell, towerStatsList);
-
+    ClickChecker(cellInfoList, wichCellMouseOn, ref oldMouseCell, towerStatsList, pathEasy1);
 }
 static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> pathEasy1)
 {
@@ -110,21 +108,44 @@ static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouse
     }
 
 }
-static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, ref int oldMouseCell, List<TowerStats> towerStatsList)
+static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, ref int oldMouseCell, List<TowerStats> towerStatsList, List<(int, int)> pathEasy1)
 {
     bool haveMouseBenPressed;
     haveMouseBenPressed = Raylib.IsMouseButtonPressed(MouseButton.Left);
     if (haveMouseBenPressed)
     {
-        TowerPlacer(cellInfoList, wichCellMouseOn, ref oldMouseCell);
+        TowerPlacer(cellInfoList, wichCellMouseOn, pathEasy1, towerStatsList);
+    }
+}
+static void TowerPlacer(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathEasy1, List<TowerStats> towerStatsList)
+{
+    if (PlaceIsOcupied(cellInfoList, wichCellMouseOn, pathEasy1, towerStatsList) == false)
+    {
+        cellInfoList[wichCellMouseOn].CellColor = Color.Red;
         towerStatsList.Add(new TowerStats(new Vector2(CellNumberToCordConverter(cellInfoList, wichCellMouseOn).Item1, CellNumberToCordConverter(cellInfoList, wichCellMouseOn).Item2), 400, 10, 20));
     }
 }
-static void TowerPlacer(List<CellInfoClass> cellInfoList, int wichCellMouseOn, ref int oldMouseCell)
+static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathEasy1, List<TowerStats> towerStatsList)
 {
-    cellInfoList[wichCellMouseOn].CellColor = Color.Brown;
-    oldMouseCell = wichCellMouseOn;
-    Console.WriteLine(wichCellMouseOn);
+    for (int i = 0; i < towerStatsList.Count; i++)
+    {
+        if (wichCellMouseOn == CordToCellNumberConverter((int)towerStatsList[i].Pos.X, (int)towerStatsList[i].Pos.Y, 50, cellInfoList))
+        {
+            return true;
+        }
+    }
+    for (int i = 0; i < pathEasy1.Count; i++)
+    {
+        if (wichCellMouseOn == CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+static void WaveMaker()
+{
+    
 }
 
 // static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
