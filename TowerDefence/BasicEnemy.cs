@@ -45,6 +45,6 @@ class BasicEnemyClass
             }
             Raylib.DrawCircleV(Pos, 25, Color.Red);
         }
-        return (IsAlive);
+        return IsAlive;
     }
 }

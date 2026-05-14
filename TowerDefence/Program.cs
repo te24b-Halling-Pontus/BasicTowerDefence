@@ -11,45 +11,145 @@ int screenHeight = 500;
 int cellSize = 50;
 int cellNumber = -1;
 List<CellInfoClass> cellInfoList = [];
-List<(int, int)> pathEasy1 = [(150, 0), (150, 50), (150, 100), (150, 150), (150, 200), (200, 200), (250, 200), (300, 200), (350, 200), (400, 200), (450, 200), (500, 200), (500, 150), (500, 100), (500, 50), (550, 50), (600, 50), (650, 50), (650, 100), (650, 150), (650, 200), (650, 250), (650, 300), (650, 350), (700, 350), (750, 350), (800, 350)];
+List<List<(int, int)>> path = [];
+List<(int, int)> pathMedium = [(150, 0), (150, 50), (150, 100), (150, 150), (150, 200), (200, 200), (250, 200), (300, 200), (350, 200), (400, 200), (450, 200), (500, 200), (500, 150), (500, 100), (500, 50), (550, 50), (600, 50), (650, 50), (650, 100), (650, 150), (650, 200), (650, 250), (650, 300), (650, 350), (700, 350), (750, 350), (800, 350)];
+List<(int, int)> pathEsay = [(0, 150), (50, 150), (100, 150), (100, 200), (100, 250), (100, 300), (100, 350), (150, 350), (200, 350), (200, 300), (200, 250), (200, 200), (200, 150), (200, 100), (250, 100), (300, 100), (350, 100), (400, 100), (450, 100), (500, 100), (500, 150), (500, 200), (500, 250), (500, 300), (500, 350), (550, 350), (600, 350), (650, 350), (700, 350), (700, 300), (700, 250), (700, 200), (700, 150), (700, 100), (700, 50), (700, 0)];
+path.Add(pathMedium);
 //mus relaterade datatyper
+int wichCellMouseOn;
 int oldMouseCell = 0;
+int mousePosY;
+int mousePosX;
 //fiende grejor
-List<BasicEnemyClass> basicEnemy = [];
-basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
-basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
+List<BasicEnemyClass> basicEnemy = []; //valde lista för då kan man nå med ett index plus att man kan ta bort och lägga till index värden
 basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
 //torn relaterade datatyper
-List<TowerStats> towerStatsList = [];
+List<TowerStats> towerStatsList = []; //jag valde en lista för jag vill att den ska kuna nå med ett index och att man kan läga till mer index platser.
+//våg relaterade datatyper
+int waveCount = 0;
+//startskärm relaterade datatyper
+bool showStartMenu = true;
+Dictionary<string, Rectangle> startMenuButtons = new Dictionary<string, Rectangle>(); //alla knappar
+startMenuButtons.Add("start", new Rectangle(100, 200, 200, 100));
+startMenuButtons.Add("easy", new Rectangle(275, 50, 200, 100));
+startMenuButtons.Add("medium", new Rectangle(275, 200, 200, 100));
+startMenuButtons.Add("hard", new Rectangle(275, 350, 200, 100));
+startMenuButtons.Add("changeMode", new Rectangle(500, 200, 200, 100));
+bool showDifficultyOptions = false;
+int difficulty = 1;
 
 
+int temp = 0;
 Raylib.InitWindow(screenWidth, screenHeight, "Roligt TD spel");
 Raylib.SetTargetFPS(60);
 while (!Raylib.WindowShouldClose())
 {
-    int mousePosX = Raylib.GetMouseX();
-    int mousePosY = Raylib.GetMouseY();
-    int wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
-    blockHigheLighter(cellInfoList, ref oldMouseCell, wichCellMouseOn);
     Raylib.BeginDrawing();
-    Raylib.ClearBackground(Color.White);
-    CellPianter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime);
+    if (showStartMenu) { StartMenu(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty); }
+    else
+    {
+        Raylib.ClearBackground(Color.White);
+        mousePosX = Raylib.GetMouseX();
+        mousePosY = Raylib.GetMouseY();
+        wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
+        BlockHigheLighter(cellInfoList, ref oldMouseCell, wichCellMouseOn);
+        CellPainter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime);
+        PathChanger(firstTime, pathMedium, cellInfoList);
+        TowerController(basicEnemy, towerStatsList);
+        EnemyController(basicEnemy, pathMedium);
+        cellNumber = 0;
+        firstTime = false;
+        ClickChecker(cellInfoList, wichCellMouseOn, ref oldMouseCell, towerStatsList, pathMedium);
+        temp++;
+        if (temp == 10)
+        {
+            temp = 0;
+            basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
+        }
+    }
+    Raylib.EndDrawing();
+}
+static void StartMenu(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty)
+{
+    Raylib.ClearBackground(Color.Black);
+    if (showDifficultyOptions)
+    {
+        Raylib.DrawRectangleRec(startMenuButtons["easy"], Color.White);
+        Raylib.DrawRectangleRec(startMenuButtons["medium"], Color.White);
+        Raylib.DrawRectangleRec(startMenuButtons["hard"], Color.White);
+        Raylib.DrawText("easy", 275, 75, 40, Color.Black);
+        Raylib.DrawText("medium", 275, 225, 40, Color.Black);
+        Raylib.DrawText("hard", 275, 375, 40, Color.Black);
+
+    }
+    else
+    {
+        Raylib.DrawRectangleRec(startMenuButtons["start"], Color.White);
+        Raylib.DrawRectangleRec(startMenuButtons["changeMode"], Color.White);
+        Raylib.DrawText("Välkomen till ett bra TD spel", 250, 100, 20, Color.White);
+        Raylib.DrawText("start", 145, 225, 40, Color.Black);
+        Raylib.DrawText("difficulty", 510, 225, 40, Color.Black);
+    }
+    StartMenuNavigation(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty);
+}
+static void StartMenuNavigation(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty)
+{
+    if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+    {
+        MouseButtonChecker(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty);
+    }
+}
+static void MouseButtonChecker(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty)
+{
+    foreach (var item in startMenuButtons)
+    {
+        if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), item.Value))
+        {
+            if (!showDifficultyOptions)
+                switch (item.Key)
+                {
+                    case "start":
+                        showStartMenu = false;
+                        break;
+                    case "changeMode":
+                        showDifficultyOptions = true;
+                        break;
+                }
+            else if (showDifficultyOptions)
+            {
+                switch (item.Key)
+                {
+                    case "easy":
+                        difficulty = 1;
+                        showDifficultyOptions = false;
+                        break;
+                    case "medium":
+                        difficulty = 2;
+                        showDifficultyOptions = false;
+                        break;
+                    case "hard":
+                        difficulty = 3;
+                        showDifficultyOptions = false;
+                        break;
+                }
+
+            }
+        }
+
+    }
+}
+static void PathChanger(bool firstTime, List<(int, int)> path, List<CellInfoClass> cellInfoList)
+{
     if (firstTime)
     {
-        for (int i = 0; i < pathEasy1.Count - 1; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            int tempCellNumber = CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList);
+            int tempCellNumber = CordToCellNumberConverter(path[i].Item1, path[i].Item2, 50, cellInfoList);
             cellInfoList[tempCellNumber].CellColor = Color.Brown;
         }
     }
-    TowerController(basicEnemy, towerStatsList);
-    EnemyController(basicEnemy, pathEasy1);
-    Raylib.EndDrawing();
-    cellNumber = 0;
-    firstTime = false;
-    ClickChecker(cellInfoList, wichCellMouseOn, ref oldMouseCell, towerStatsList, pathEasy1);
 }
-static void CellPianter(List<CellInfoClass> cellInfoList, int screenWidth , int screenHeight, int cellSize, int cellNumber, bool firstTime)
+static void CellPainter(List<CellInfoClass> cellInfoList, int screenWidth, int screenHeight, int cellSize, int cellNumber, bool firstTime)
 {
     for (int y = 0; y < screenHeight; y += cellSize)
     {
@@ -68,11 +168,11 @@ static void CellPianter(List<CellInfoClass> cellInfoList, int screenWidth , int 
         }
     }
 }
-static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> pathEasy1)
+static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> pathMedium)
 {
     for (int i = 0; i < basicEnemy.Count; i++)
     {
-        if (!basicEnemy[i].Enemymover(pathEasy1))
+        if (!basicEnemy[i].Enemymover(pathMedium))
         {
             basicEnemy.RemoveAt(i);
             i--;
@@ -94,17 +194,17 @@ static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<Ce
         {
             if (cellInfoList[i].Y <= yCord && cellInfoList[i].Y + cellSize > yCord)
             {
-                return (cellInfoList[i].CellNumber);
+                return cellInfoList[i].CellNumber;
             }
         }
     }
-    return (0);
+    return 0;
 }
 static (float, float) CellNumberToCordConverter(List<CellInfoClass> cellInfoList, int cellNumber)
 {
     return (cellInfoList[cellNumber].X, cellInfoList[cellNumber].Y);
 }
-static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell, int wichCellMouseOn)
+static void BlockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell, int wichCellMouseOn)
 {
     if (oldMouseCell != wichCellMouseOn)
     {
@@ -114,24 +214,24 @@ static void blockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouse
     }
 
 }
-static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, ref int oldMouseCell, List<TowerStats> towerStatsList, List<(int, int)> pathEasy1)
+static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, ref int oldMouseCell, List<TowerStats> towerStatsList, List<(int, int)> pathMedium)
 {
     bool haveMouseBenPressed;
     haveMouseBenPressed = Raylib.IsMouseButtonPressed(MouseButton.Left);
     if (haveMouseBenPressed)
     {
-        TowerPlacer(cellInfoList, wichCellMouseOn, pathEasy1, towerStatsList);
+        TowerPlacer(cellInfoList, wichCellMouseOn, pathMedium, towerStatsList);
     }
 }
-static void TowerPlacer(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathEasy1, List<TowerStats> towerStatsList)
+static void TowerPlacer(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathMedium, List<TowerStats> towerStatsList)
 {
-    if (PlaceIsOcupied(cellInfoList, wichCellMouseOn, pathEasy1, towerStatsList) == false)
+    if (PlaceIsOcupied(cellInfoList, wichCellMouseOn, pathMedium, towerStatsList) == false)
     {
         cellInfoList[wichCellMouseOn].CellColor = Color.Red;
         towerStatsList.Add(new TowerStats(new Vector2(CellNumberToCordConverter(cellInfoList, wichCellMouseOn).Item1, CellNumberToCordConverter(cellInfoList, wichCellMouseOn).Item2), 400, 10, 20));
     }
 }
-static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathEasy1, List<TowerStats> towerStatsList)
+static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathMedium, List<TowerStats> towerStatsList)
 {
     for (int i = 0; i < towerStatsList.Count; i++)
     {
@@ -140,67 +240,22 @@ static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn
             return true;
         }
     }
-    for (int i = 0; i < pathEasy1.Count; i++)
+    for (int i = 0; i < pathMedium.Count; i++)
     {
-        if (wichCellMouseOn == CordToCellNumberConverter(pathEasy1[i].Item1, pathEasy1[i].Item2, 50, cellInfoList))
+        if (wichCellMouseOn == CordToCellNumberConverter(pathMedium[i].Item1, pathMedium[i].Item2, 50, cellInfoList))
         {
             return true;
         }
     }
     return false;
 }
-static void WaveMaker()
+static void WaveMaker(int waveCount, List<BasicEnemyClass> basicEnemy)
 {
+    int enemeis = 10 * (int)Math.Pow(1.2, waveCount);
+    for (int i = 0; i < enemeis; i++)
+    {
 
+    }
 }
-
-// static void Menu(int minLevel, int maxLevel, List<String> listOfMenuItem)
-// {
-//     int level = 0;
-//     MenuPrinter(listOfMenuItem, level);
-//     while (true)
-//     {
-//         ConsoleKey pressKey = Console.ReadKey(true).Key;
-//         level = LevelSwitcher(pressKey, minLevel, maxLevel, level);
-//         Console.Clear();
-//         MenuPrinter(listOfMenuItem, level);
-//     }
-// }
-// static int LevelSwitcher(ConsoleKey pressKey, int minLevel, int maxLevel, int level)
-// {
-//     switch (pressKey)
-//     {
-//         case ConsoleKey.DownArrow:
-//             if (level < maxLevel)
-//             {
-//                 level++;
-//             }
-//             break;
-//         case ConsoleKey.UpArrow:
-//             if (level > minLevel)
-//             {
-//                 level--;
-//             }
-//             break;
-//     }
-//     return (level);
-// }
-// static void MenuPrinter(List<string> listOfMenuItem, int level)
-// {
-//     for (int i = 0; i < listOfMenuItem.Count; i++)
-//     {
-//         if (i == level)
-//         {
-//             Console.WriteLine($">{listOfMenuItem[i]}<");
-//         }
-//         else
-//         {
-//             Console.WriteLine($" {listOfMenuItem[i]}");
-//         }
-//     }
-// }
-
-
-
 
 Console.ReadLine();
