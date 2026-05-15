@@ -45,16 +45,14 @@ class TowerStats
     int FirstChecker(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
     {
         int maxTemp = 0;
-        int temp;
         if (posilbleTragets.Count > 0)
         {
             for (int i = 0; i <= PosilbleTragets.Count - 1; i++) // loopar genom och kollar vilken som är först
             {
-                temp = basicEnemy[PosilbleTragets[i]].PathPos;
-                if (maxTemp < temp)
+                if (maxTemp < basicEnemy[PosilbleTragets[i]].PathPos)
                 {
                     target = PosilbleTragets[i];
-                    maxTemp = temp;
+                    maxTemp = basicEnemy[PosilbleTragets[i]].PathPos;
                 }
             }
         }

@@ -63,15 +63,15 @@ while (!Raylib.WindowShouldClose())
         CellPainter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime);
         PathChanger(changeDifficulty, path, cellInfoList, difficulty);
         TowerController(basicEnemy, towerStatsList);
-        EnemyController(basicEnemy, path);
+        EnemyController(basicEnemy, path[difficulty]);
         cellNumber = 0;
         firstTime = false;
-        ClickChecker(cellInfoList, wichCellMouseOn, towerStatsList, pathMedium);
+        ClickChecker(cellInfoList, wichCellMouseOn, towerStatsList, path[difficulty]);
         temp++;
         if (temp == 10)
         {
             temp = 0;
-            basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(175, -25)));
+            basicEnemy.Add(new BasicEnemyClass(100, 1000, new Vector2(path[difficulty][0].Item1 + 25, path[difficulty][0].Item2 + 25)));
         }
     }
     Raylib.EndDrawing();
@@ -205,11 +205,11 @@ static void CellPainter(List<CellInfoClass> cellInfoList, int screenWidth, int s
         }
     }
 }
-static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> pathMedium)
+static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> path)
 {
     for (int i = 0; i < basicEnemy.Count; i++)
     {
-        if (!basicEnemy[i].Enemymover(pathMedium))
+        if (!basicEnemy[i].Enemymover(path))
         {
             basicEnemy.RemoveAt(i);
             i--;
@@ -251,24 +251,24 @@ static void BlockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouse
     }
 
 }
-static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<TowerStats> towerStatsList, List<(int, int)> pathMedium)
+static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<TowerStats> towerStatsList, List<(int, int)> path)
 {
     bool haveMouseBenPressed;
     haveMouseBenPressed = Raylib.IsMouseButtonPressed(MouseButton.Left);
     if (haveMouseBenPressed)
     {
-        TowerPlacer(cellInfoList, wichCellMouseOn, pathMedium, towerStatsList);
+        TowerPlacer(cellInfoList, wichCellMouseOn, path, towerStatsList);
     }
 }
-static void TowerPlacer(List<CellInfoClass> cellInfoList, int whichCellMouseOn, List<(int, int)> pathMedium, List<TowerStats> towerStatsList)
+static void TowerPlacer(List<CellInfoClass> cellInfoList, int whichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList)
 {
-    if (PlaceIsOcupied(cellInfoList, whichCellMouseOn, pathMedium, towerStatsList) == false)
+    if (PlaceIsOcupied(cellInfoList, whichCellMouseOn, path, towerStatsList) == false)
     {
         cellInfoList[whichCellMouseOn].CellColor = Color.Red;
         towerStatsList.Add(new TowerStats(new Vector2(CellNumberToCordConverter(cellInfoList, whichCellMouseOn).Item1, CellNumberToCordConverter(cellInfoList, whichCellMouseOn).Item2), 400, 10, 20));
     }
 }
-static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> pathMedium, List<TowerStats> towerStatsList)
+static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList)
 {
     for (int i = 0; i < towerStatsList.Count; i++)
     {
@@ -277,9 +277,9 @@ static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn
             return true;
         }
     }
-    for (int i = 0; i < pathMedium.Count; i++)
+    for (int i = 0; i < path.Count; i++)
     {
-        if (wichCellMouseOn == CordToCellNumberConverter(pathMedium[i].Item1, pathMedium[i].Item2, 50, cellInfoList))
+        if (wichCellMouseOn == CordToCellNumberConverter(path[i].Item1, path[i].Item2, 50, cellInfoList))
         {
             return true;
         }

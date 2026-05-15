@@ -38,7 +38,7 @@ class BasicEnemyClass
     {
         if (PathPos + 1 == path.Count || Health <= 0) // gör så den försviner vid slutet
         {
-            return (false);
+            return false;
         }
         return true;
     }
