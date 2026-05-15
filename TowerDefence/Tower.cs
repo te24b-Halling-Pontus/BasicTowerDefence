@@ -38,11 +38,11 @@ class TowerStats
         }
         if (targetInRange)
         {
-            target = WhoIsFirst(basicEnemy, posilbleTragets);
+            target = FirstChecker(basicEnemy, posilbleTragets);
             basicEnemy[target].Health -= Damage;
         }
     }
-    int WhoIsFirst(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
+    int FirstChecker(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
     {
         int maxTemp = 0;
         int temp;

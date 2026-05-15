@@ -1,11 +1,11 @@
 namespace BasicEnemy;
+
 using System.Numerics;
 using Raylib_cs;
 
 
 class BasicEnemyClass
 {
-    public bool IsAlive = true;
     public int Health;
     public int Speed;
     public int PathPos = 0;
@@ -19,32 +19,27 @@ class BasicEnemyClass
 
     public bool Enemymover(List<(int, int)> path)
     {
-        if (PathPos + 1 == path.Count) // gör så den försviner vid slutet
+        Vector2 nextPos = new Vector2(path[PathPos].Item1 + 25, path[PathPos].Item2 + 25); //+25 för då är den i miten av kvadraten
+        Vector2 diretion = nextPos - Pos;
+        if (diretion.Length() > 1f) // kollar så fienden är mer en en kordinat ifrån målet.
         {
-            IsAlive = false;
-            return (IsAlive);
+            diretion = Vector2.Normalize(diretion);
+            Pos += diretion * Speed / 60; // 60 är lite onödigt men jag tänkte att man skulle dela på framsen men man kan ju också bara säka speeden.
         }
-        else if (Health <= 0)
+        else //nyt mål
         {
-            IsAlive = false;
-            return (IsAlive);
+            Pos = nextPos;
+            PathPos++;
         }
-        else
+        Raylib.DrawCircleV(Pos, 25, Color.Red);
+        return EnemyKiller(path, PathPos, Health);
+    }
+    static bool EnemyKiller(List<(int, int)> path, int PathPos, int Health)
+    {
+        if (PathPos + 1 == path.Count || Health <= 0) // gör så den försviner vid slutet
         {
-            Vector2 nextPos = new Vector2(path[PathPos].Item1 + 25, path[PathPos].Item2 + 25); //+25 för då är den i miten av kvadraten
-            Vector2 diretion = nextPos - Pos;
-            if (diretion.Length() > 1f) // kollar så fienden är mer en en kordinat ifrån målet.
-            {
-                diretion = Vector2.Normalize(diretion);
-                Pos += diretion * Speed / 60; // 60 är lite onödigt men jag tänkte att man skulle dela på framsen men man kan ju också bara säka speeden.
-            }
-            else //nyt mål
-            {
-                Pos = nextPos;
-                PathPos++;
-            }
-            Raylib.DrawCircleV(Pos, 25, Color.Red);
+            return (false);
         }
-        return IsAlive;
+        return true;
     }
 }
