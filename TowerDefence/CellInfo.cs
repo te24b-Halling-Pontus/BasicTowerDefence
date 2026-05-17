@@ -2,7 +2,7 @@ using Raylib_cs;
 
 namespace CellInfo;
 
-class CellInfoClass
+class CellInfoClass // har bara alla clers information
 {
     public int X;
     public int Y;

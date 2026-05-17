@@ -20,7 +20,7 @@ class TowerStats
         this.Hitspeed = hitspeed;
     }
 
-    public void TowerShoter(List<BasicEnemyClass> basicEnemy) //gör så tornen sjuter
+    public void TowerShooter(List<BasicEnemyClass> basicEnemy) //gör så tornen sjuter
     {
         int enemyNumber = 0;
         posilbleTragets.Clear(); //tar bort alla värden i posibleTargets
@@ -41,17 +41,17 @@ class TowerStats
             basicEnemy[target].Health -= Damage; //gör skada på fienden
         }
     }
-    int FirstChecker(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
+    int FirstChecker(List<BasicEnemyClass> basicEnemy, List<int> posilbleTragets) // försöker kolla vilken fiende som är först
     {
         int maxTemp = 0;
         if (posilbleTragets.Count > 0)
         {
-            for (int i = 0; i < PosilbleTragets.Count; i++) // loopar genom och kollar vilken som är först
+            for (int i = 0; i < posilbleTragets.Count; i++) // loopar genom och kollar vilken som är först
             {
-                if (maxTemp <= basicEnemy[PosilbleTragets[i]].PathPos)
+                if (maxTemp <= basicEnemy[posilbleTragets[i]].PathPos)
                 {
-                    target = PosilbleTragets[i];
-                    maxTemp = basicEnemy[PosilbleTragets[i]].PathPos;
+                    target = posilbleTragets[i];
+                    maxTemp = basicEnemy[posilbleTragets[i]].PathPos;
                 }
             }
         }

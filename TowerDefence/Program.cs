@@ -107,7 +107,7 @@ static void StartMenu(Dictionary<string, Rectangle> startMenuButtons, ref bool s
     }
     if (Raylib.IsMouseButtonPressed(MouseButton.Left)) //kollar om vänster kanppen är tryckt
     {
-        MouseButtonChecker(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty, ref health); //kollar vilke knapp som trycks
+        MouseButtonChecker(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty); //kollar vilke knapp som trycks
     }
 }
 static bool PrintInfoMenu()
@@ -149,7 +149,7 @@ static void PrintStartMenu(Dictionary<string, Rectangle> startMenuButtons)
     Raylib.DrawText("Info", 355, 150, 40, Color.Black);
     Raylib.DrawText("Difficulty", 560, 275, 40, Color.Black);
 }
-static void MouseButtonChecker(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty, ref bool showInfo, ref bool changeDifficulty, ref int health)
+static void MouseButtonChecker(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty, ref bool showInfo, ref bool changeDifficulty)
 {
     foreach (var item in startMenuButtons)
     {
@@ -225,7 +225,7 @@ static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> p
 {
     for (int i = 0; i < basicEnemy.Count; i++)
     {
-        (bool, string) temp = basicEnemy[i].Enemymover(path);
+        (bool, string) temp = basicEnemy[i].EnemyMover(path);
         if (!temp.Item1) //kollar om fienden ska dö
         {
             basicEnemy.RemoveAt(i); //tar bort fienden
@@ -245,7 +245,7 @@ static void TowerController(List<BasicEnemyClass> basicEnemy, List<TowerStats> t
 {
     for (int i = 0; i < towerStatsList.Count; i++) //går igenom alla torn och gör så de sjuter
     {
-        towerStatsList[i].TowerShoter(basicEnemy);
+        towerStatsList[i].TowerShooter(basicEnemy);
     }
 }
 static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList) //tar in kordinaterna och spotar ut cell numret
