@@ -17,7 +17,7 @@ class BasicEnemyClass
         this.Pos = pos;
     }
 
-    public bool Enemymover(List<(int, int)> path)
+    public (bool ,string) Enemymover(List<(int, int)> path)
     {
         Vector2 nextPos = new Vector2(path[PathPos].Item1 + 25, path[PathPos].Item2 + 25); //+25 för då är den i miten av kvadraten
         Vector2 diretion = nextPos - Pos;
@@ -34,12 +34,18 @@ class BasicEnemyClass
         Raylib.DrawCircleV(Pos, 25, Color.Red);
         return EnemyKiller(path, PathPos, Health);
     }
-    static bool EnemyKiller(List<(int, int)> path, int PathPos, int Health)
+    static (bool, string) EnemyKiller(List<(int, int)> path, int PathPos, int Health)
     {
-        if (PathPos + 1 == path.Count || Health <= 0) // gör så den försviner vid slutet
+        if (PathPos + 1 == path.Count) // gör så den försviner vid slutet och när den blir sjuten ger även hur den dog
         {
-            return false;
+            string deathBy = "End of path"; 
+            return (false, deathBy);
         }
-        return true;
+        else if (Health <= 0)
+        {
+            string deathBy = "killed";
+            return (false, deathBy);
+        }
+        return (true, "");
     }
 }

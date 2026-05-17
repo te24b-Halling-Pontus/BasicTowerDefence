@@ -1,7 +1,6 @@
 namespace Tower;
 
 using System.Numerics;
-using CellInfo;
 using BasicEnemy;
 
 class TowerStats
@@ -21,25 +20,25 @@ class TowerStats
         this.Hitspeed = hitspeed;
     }
 
-    public void TowerShoter(List<BasicEnemyClass> basicEnemy)
+    public void TowerShoter(List<BasicEnemyClass> basicEnemy) //gör så tornen sjuter
     {
         int enemyNumber = 0;
-        posilbleTragets.Clear();
-        bool targetInRange = false;
+        posilbleTragets.Clear(); //tar bort alla värden i posibleTargets
+        bool targetInRange = false; //omställer så den inte förblir true 
         foreach (var enemy in basicEnemy)
         {
             float distanceBetwen = Vector2.Distance(Pos, enemy.Pos); // kollar distansen mellan dem
             if (distanceBetwen <= Range) // kollar om den är inom range
             {
-                posilbleTragets.Add(enemyNumber);
-                targetInRange = true;
+                posilbleTragets.Add(enemyNumber);// lägger till fienderna som är i range
+                targetInRange = true; // säger att det finns targets i range
             }
             enemyNumber++;
         }
-        if (targetInRange)
+        if (targetInRange) //kolar om det är något i range
         {
-            target = FirstChecker(basicEnemy, posilbleTragets);
-            basicEnemy[target].Health -= Damage;
+            target = FirstChecker(basicEnemy, posilbleTragets); //kollar vilken fiende som är först
+            basicEnemy[target].Health -= Damage; //gör skada på fienden
         }
     }
     int FirstChecker(List<BasicEnemyClass> basicEnemy, List<int> PosilbleTragets) // försöker kolla vilken fiende som är först
@@ -47,9 +46,9 @@ class TowerStats
         int maxTemp = 0;
         if (posilbleTragets.Count > 0)
         {
-            for (int i = 0; i <= PosilbleTragets.Count - 1; i++) // loopar genom och kollar vilken som är först
+            for (int i = 0; i < PosilbleTragets.Count; i++) // loopar genom och kollar vilken som är först
             {
-                if (maxTemp < basicEnemy[PosilbleTragets[i]].PathPos)
+                if (maxTemp <= basicEnemy[PosilbleTragets[i]].PathPos)
                 {
                     target = PosilbleTragets[i];
                     maxTemp = basicEnemy[PosilbleTragets[i]].PathPos;
