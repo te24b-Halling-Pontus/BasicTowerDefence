@@ -6,7 +6,6 @@ using Raylib_cs;
 
 class BasicEnemyClass
 {
-    int test;
     public int Health;
     public int Speed;
     public int PathPos = 0;
