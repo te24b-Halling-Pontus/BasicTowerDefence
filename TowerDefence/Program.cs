@@ -50,9 +50,9 @@ Raylib.SetTargetFPS(60); //seter max FPS
 while (!Raylib.WindowShouldClose())
 {
     Raylib.BeginDrawing();
-    if (showStartMenu)
+    if (showStartMenu) //resetar många värden så man t.ex inte startar med mycket pengar eller inget HP
     {
-        StartMenu(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty, ref money, ref health, ref totalEnemyCount); //vissar start menun samt resetar vissa värden
+        StartMenu(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty, ref money, ref health, ref totalEnemyCount); //vissar start menyn samt resetar vissa värden
         health = 100; // gör bara så när man dör att hp blir 100
         towerStatsList.Clear(); //alla tre clerar alla listor som det blir som en ny start
         basicEnemy.Clear();
@@ -67,7 +67,7 @@ while (!Raylib.WindowShouldClose())
         Raylib.ClearBackground(Color.White); // gör så backrunden blir vit
         mousePosX = Raylib.GetMouseX(); //får mus infromationen
         mousePosY = Raylib.GetMouseY();
-        wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList); // får vilken cell musen är på
+        wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList); // får vilken cell musen är på, vilket möjlirör så man kan setta ut torn smat ser en highlight på den cellen man är på
         CellPainter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime); // ritar ut cellerna
         BlockHigheLighter(cellInfoList, ref oldMouseCell, wichCellMouseOn);// gör så man får en veta vilken ruta man är över (den blir lite ljusare)
         PathChanger(changeDifficulty, path, cellInfoList, difficulty); //ändrar färgen på till brun så man ser vart vägen går 
@@ -88,29 +88,31 @@ while (!Raylib.WindowShouldClose())
     }
     Raylib.EndDrawing();
 }
-static void StartMenu(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty, ref bool showInfo, ref bool changeDifficulty, ref int money, ref int health, ref int totalEnemyCount)
+static void StartMenu(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty, ref bool showInfo, ref bool changeDifficulty, ref int money, ref int health, ref int totalEnemyCount) //här kan användaren ändra svårighets grad, se lite hur seplet fungerar och starta själva seplet
 {
     money = 100;
     totalEnemyCount = 0;
     Raylib.ClearBackground(Color.Black);
     if (showDifficultyOptions)
     {
-        PrintDifficultyMenu(startMenuButtons); //vissar Difficulty menyn
+        PrintDifficultyMenu(startMenuButtons);
     }
     else if (showInfo)
     {
-        showInfo = PrintInfoMenu();//printar bara lite infromation om hur seplat funkar
+        showInfo = PrintInfoMenu();
     }
     else
     {
-        PrintStartMenu(startMenuButtons); //printar vanliga start menyn
+        PrintStartMenu(startMenuButtons);
     }
     if (Raylib.IsMouseButtonPressed(MouseButton.Left)) //kollar om vänster kanppen är tryckt
     {
-        MouseButtonChecker(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty); //kollar vilke knapp som trycks
+        MouseButtonChecker(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty); //kollar vilken knapp som trycks
     }
 }
-static bool PrintInfoMenu()
+
+
+static bool PrintInfoMenu()//printar bara lite infromation om hur seplat funkar
 {
     Raylib.DrawText("[Enter] för att lämna", 530, 10, 25, Color.Red);
     Raylib.DrawCircle(52, 25, 6, Color.Red);
@@ -122,15 +124,15 @@ static bool PrintInfoMenu()
     Raylib.DrawRectangle(40, 150, 25, 25, Color.Red);
     Raylib.DrawText("Torn, gör skada på fiender inom en viss radie.", 80, 155, 20, Color.White);
     Raylib.DrawText("Om fienderna kommer till pathens ände så förlorar du liv.", 35, 190, 20, Color.White);
-    Raylib.DrawText("kostar $50 att säta ut ett torn du får $1 per fiende dödad.", 35, 215, 20, Color.White);
+    Raylib.DrawText("kostar $100 att säta ut ett torn du får $1 per fiende dödad.", 35, 215, 20, Color.White);
     Raylib.DrawText("Spelet är cell baserat men radien för tornen är kordiant baserart.", 35, 240, 20, Color.White);
     if (Raylib.IsKeyPressed(KeyboardKey.Enter)) //escape fungerar inte :(
     {
         return false; //går till backa
     }
-    return false;
+    return true;
 }
-static void PrintDifficultyMenu(Dictionary<string, Rectangle> startMenuButtons)
+static void PrintDifficultyMenu(Dictionary<string, Rectangle> startMenuButtons)//vissar Difficulty menyn, där man med hjälp av MouseButtonChecker() kan göra så man väljer svårighetsgrad
 {
     Raylib.DrawRectangleRec(startMenuButtons["easy"], Color.White);
     Raylib.DrawRectangleRec(startMenuButtons["medium"], Color.White);
@@ -139,7 +141,7 @@ static void PrintDifficultyMenu(Dictionary<string, Rectangle> startMenuButtons)
     Raylib.DrawText("Medium", 300, 225, 40, Color.Black);
     Raylib.DrawText("Hard", 300, 375, 40, Color.Black);
 }
-static void PrintStartMenu(Dictionary<string, Rectangle> startMenuButtons)
+static void PrintStartMenu(Dictionary<string, Rectangle> startMenuButtons) //printar vanliga start menyn där man trycker man kan trycka på på kanppar för att starta spelet, ändra svårighets graden samt se lite information om spelet
 {
     Raylib.DrawRectangleRec(startMenuButtons["start"], Color.White);
     Raylib.DrawRectangleRec(startMenuButtons["changeMode"], Color.White);
@@ -153,7 +155,7 @@ static void MouseButtonChecker(Dictionary<string, Rectangle> startMenuButtons, r
 {
     foreach (var item in startMenuButtons)
     {
-        if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), item.Value)) //kollar vilken knapp som musen koliderar med samt gört så man kan få ut nyckens värde
+        if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), item.Value)) //kollar vilken knapp som musen koliderar med samt gört så man kan få ut nyckens värde, vilket gör så man kan navigera i de olika menyerna, den ändrar även dificultin om man trycker på hard, easy eller medium vilket ändrar vilken bana man sen kör på när man trycker på start
         {
             if (!showDifficultyOptions && !showInfo) //kollar så den bara funkar när rätt meny är uppe
                 switch (item.Key) //nycken värde
@@ -241,14 +243,14 @@ static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> p
         }
     }
 }
-static void TowerController(List<BasicEnemyClass> basicEnemy, List<TowerStats> towerStatsList)
+static void TowerController(List<BasicEnemyClass> basicEnemy, List<TowerStats> towerStatsList) 
 {
     for (int i = 0; i < towerStatsList.Count; i++) //går igenom alla torn och gör så de sjuter
     {
         towerStatsList[i].TowerShooter(basicEnemy);
     }
 }
-static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList) //tar in kordinaterna och spotar ut cell numret
+static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<CellInfoClass> cellInfoList) //tar in kordinaterna och spotar ut cell numret, vilket används t.ex när man har musens x och y cordinater men vill ha cell numret istället som när man skapar torn
 {
     for (int i = 0; i < cellInfoList.Count; i++)
     {
@@ -262,8 +264,8 @@ static int CordToCellNumberConverter(int xCord, int yCord, int cellSize, List<Ce
     }
     return 0;
 }
-static (float, float) CellNumberToCordConverter(List<CellInfoClass> cellInfoList, int cellNumber) //tar in cell numret och spotar ut kordinaterna
-{
+static (float, float) CellNumberToCordConverter(List<CellInfoClass> cellInfoList, int cellNumber) //tar in cell numret och spotar ut kordinaterna, används när man har cell numret men vill ha x och y kordinaterna används.
+{                                                                                                 //t.ex för torn för efftersom rangen som tornen har är i kordinater så behöver den inte i cell numer så behöver den utgå från en plats
     return (cellInfoList[cellNumber].X, cellInfoList[cellNumber].Y); //effter som cellInfoList har alla kordinaterna så är det bara att ta ut dem
 }
 static void BlockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouseCell, int wichCellMouseOn)
@@ -272,27 +274,30 @@ static void BlockHigheLighter(List<CellInfoClass> cellInfoList, ref int oldMouse
     {
         cellInfoList[wichCellMouseOn].CellColor = Raylib.ColorAlpha(cellInfoList[wichCellMouseOn].CellColor, 0.5f); //gör så cellen som musen är på blir mer transparant vilket gör den ljusare
         cellInfoList[oldMouseCell].CellColor = Raylib.ColorAlpha(cellInfoList[oldMouseCell].CellColor, 1); //gör så gamla cellen blir orginal färgen
-        oldMouseCell = wichCellMouseOn; 
+        oldMouseCell = wichCellMouseOn;
     }
 
 }
+//registrerar när du klickar på vänster klick, vilket senare instansierar ett torn i towerStatsList vilket, senare kan sjuta ner fienderna
 static void ClickChecker(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<TowerStats> towerStatsList, List<(int, int)> path, ref int money)
 {
-    if (Raylib.IsMouseButtonPressed(MouseButton.Left)) 
+    if (Raylib.IsMouseButtonPressed(MouseButton.Left))
     {
         TowerPlacer(cellInfoList, wichCellMouseOn, path, towerStatsList, ref money);
     }
 }
+//instansierar torn i torn som senare kan sjuta på fiender
 static void TowerPlacer(List<CellInfoClass> cellInfoList, int whichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList, ref int money)
 {
-    if (PlaceIsOcupied(cellInfoList, whichCellMouseOn, path, towerStatsList) == false && money >= 100)
+    if (PlaceIsOcupied(cellInfoList, whichCellMouseOn, path, towerStatsList) == false && money >= 100) //kollar om tilen är uptagen och att du har alla pengar
     {
         money -= 100; // drar pengarna 
         cellInfoList[whichCellMouseOn].CellColor = Color.Red; //ändrar färgen till röd
         towerStatsList.Add(new TowerStats(new Vector2(CellNumberToCordConverter(cellInfoList, whichCellMouseOn).Item1, CellNumberToCordConverter(cellInfoList, whichCellMouseOn).Item2), 400, 10, 10)); //intansierar tornet
     }
 }
-static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList) //kollor om cellen är uptagen
+//kollor om cellen är uptagen av en path tile eller om det redan är ett torn där. Om det är något på den tilen skickar den tillbacka true medans om tilen är fri sickar den true vilket gör så ett torn placeras ut (om du har 100$).
+static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList) 
 {
     for (int i = 0; i < towerStatsList.Count; i++)
     {
@@ -309,8 +314,7 @@ static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn
         }
     }
     return false;
-}
-static int EnemyMaker(int totalEnemyCount, List<BasicEnemyClass> basicEnemy, List<List<(int, int)>> path, int difficulty)
+}static int EnemyMaker(int totalEnemyCount, List<BasicEnemyClass> basicEnemy, List<List<(int, int)>> path, int difficulty) //skaper nya enemys och ger tillbaka hur många den har skapat så effter ett tag kan de spwna mer beroende på hur mycket den totala enemy skapande har varit
 {
     for (int i = 0; i < (int)totalEnemyCount / 150 + 1; i++) //kontrollerar hur manga fiender det ska skapas
     {
