@@ -6,17 +6,18 @@ using Raylib_cs;
 
 class BasicEnemyClass
 {
+    int test;
     public int Health;
     public int Speed;
     public int PathPos = 0;
     public Vector2 Pos;
-    public BasicEnemyClass(int health, int speed, Vector2 pos)
+    public BasicEnemyClass(int health, int speed, Vector2 pos)// ändar variablerna till de som säts in när den instansieras
     {
         this.Health = health;
         this.Speed = speed;
         this.Pos = pos;
     }
-
+    //Flytar på fienderna så de går längst stigen samt skickar till EnemyController() om den är död samt hur den dog, då dödar EnemyController() den genom att ta bort den ur listan
     public (bool ,string) EnemyMover(List<(int, int)> path)
     {
         Vector2 nextPos = new Vector2(path[PathPos].Item1 + 25, path[PathPos].Item2 + 25); //+25 för då är den i miten av kvadraten
@@ -36,7 +37,7 @@ class BasicEnemyClass
     }
     static (bool, string) EnemyKiller(List<(int, int)> path, int PathPos, int Health)
     {
-        if (PathPos + 1 == path.Count) // gör så den försviner vid slutet och när den blir sjuten ger även hur den dog
+        if (PathPos + 1 == path.Count) // gör så den försviner vid slutet och när den blir sjuten ger även hur den dog till EnemyMover() som skickar det till EnemyController()
         {
             string deathBy = "End of path"; 
             return (false, deathBy);

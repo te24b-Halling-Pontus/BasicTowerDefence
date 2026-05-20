@@ -12,7 +12,7 @@ class TowerStats
     int target;
     List<int> posilbleTragets = [];
 
-    public TowerStats(Vector2 pos, int range, int damage, int hitspeed)
+    public TowerStats(Vector2 pos, int range, int damage, int hitspeed)// ändar variablerna till de som säts in när den instansieras
     {
         this.Pos = pos;
         this.Range = range;
@@ -20,7 +20,8 @@ class TowerStats
         this.Hitspeed = hitspeed;
     }
 
-    public void TowerShooter(List<BasicEnemyClass> basicEnemy) //gör så tornen sjuter
+    //gör så tornen sjuter och dödar fiender genom att dra ner hp hos fiender till noll vilket sen fienden skickar till program.cs som sen dödar den genom att ta bort från listan
+    public void TowerShooter(List<BasicEnemyClass> basicEnemy)
     {
         int enemyNumber = 0;
         posilbleTragets.Clear(); //tar bort alla värden i posibleTargets
@@ -41,6 +42,7 @@ class TowerStats
             basicEnemy[target].Health -= Damage; //gör skada på fienden
         }
     }
+    //skickar till TowerShoter vem som är först som är inom range så den sen kan göra skada den
     int FirstChecker(List<BasicEnemyClass> basicEnemy, List<int> posilbleTragets) // försöker kolla vilken fiende som är först
     {
         int maxTemp = 0;

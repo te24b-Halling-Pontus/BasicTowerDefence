@@ -8,7 +8,7 @@ class CellInfoClass // har bara alla clers information
     public int Y;
     public int CellNumber;
     public Color CellColor;
-    public CellInfoClass(int x, int y, int cellNumber, Color cellColor)
+    public CellInfoClass(int x, int y, int cellNumber, Color cellColor)// ändar variablerna till de som säts in när den instansieras
     {
         this.X = x;
         this.Y = y;
