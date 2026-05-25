@@ -19,10 +19,10 @@ path.Add(pathEsay);
 path.Add(pathMedium);
 path.Add(pathHard);
 //mus relaterade datatyper
-int wichCellMouseOn; //vilken cell musen är på
+int wichCellMouseOn = 0; //vilken cell musen är på
 int oldMouseCell = 0;
-int mousePosY;
-int mousePosX;
+int mousePosY = 0;
+int mousePosX = 0;
 //fiende grejor
 List<BasicEnemyClass> basicEnemy = []; //valde lista för då kan man nå med ett index plus att man kan ta bort och lägga till index värden
 int health = 100;
@@ -53,45 +53,53 @@ while (!Raylib.WindowShouldClose())
     if (showStartMenu) //resetar många värden så man t.ex inte startar med mycket pengar eller inget HP
     {
         StartMenu(startMenuButtons, ref showStartMenu, ref showDifficultyOptions, ref difficulty, ref showInfo, ref changeDifficulty, ref money, ref health, ref totalEnemyCount); //vissar start menyn samt resetar vissa värden
-        health = 100; // gör bara så när man dör att hp blir 100
-        towerStatsList.Clear(); //alla tre clerar alla listor som det blir som en ny start
-        basicEnemy.Clear();
-        cellInfoList.Clear();
-        firstTime = true; // gör så det resetas samma med resten
-        changeDifficulty = true;
-        cellNumber = -1;
-
+        Reset(ref health, ref towerStatsList, ref basicEnemy, ref cellInfoList, ref firstTime, ref changeDifficulty, ref cellNumber, ref money, ref totalEnemyCount);
     }
     else
     {
-        Raylib.ClearBackground(Color.White); // gör så backrunden blir vit
-        mousePosX = Raylib.GetMouseX(); //får mus infromationen
-        mousePosY = Raylib.GetMouseY();
-        wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList); // får vilken cell musen är på, vilket möjlirör så man kan setta ut torn smat ser en highlight på den cellen man är på
-        CellPainter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime); // ritar ut cellerna
-        BlockHigheLighter(cellInfoList, ref oldMouseCell, wichCellMouseOn);// gör så man får en veta vilken ruta man är över (den blir lite ljusare)
-        PathChanger(changeDifficulty, path, cellInfoList, difficulty); //ändrar färgen på till brun så man ser vart vägen går 
-        TowerController(basicEnemy, towerStatsList); //gör så tornet sjuter
-        EnemyController(basicEnemy, path[difficulty], ref money, ref health); // hanterar fiender
-        cellNumber = 0; 
-        firstTime = false;
-        ClickChecker(cellInfoList, wichCellMouseOn, towerStatsList, path[difficulty], ref money); //hanterar hur man säter ut torn
-        Raylib.DrawText("$" + money, 700, 10, 25, Color.Black); // visar hur mycket pengar man har
-        Raylib.DrawText("HP: " + health, 600, 10, 25, Color.Black); //visar HP;et
-        if (health <= 0) { showStartMenu = true; } //gör så man kan dö
-        temp++;
-        if (temp == 10) //hanterar hur enemys spawnar
-        {
-            totalEnemyCount += (int)EnemyMaker(totalEnemyCount, basicEnemy, path, difficulty);
-            temp = 0;
-        }
+        UpdateGame(ref mousePosX, ref mousePosY, ref wichCellMouseOn, ref oldMouseCell, ref cellNumber, ref firstTime, ref changeDifficulty, ref money, ref health, ref totalEnemyCount, ref showStartMenu, ref temp, cellInfoList, towerStatsList, basicEnemy, path, startMenuButtons, screenWidth, screenHeight, cellSize, difficulty);
     }
     Raylib.EndDrawing();
 }
-static void StartMenu(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty, ref bool showInfo, ref bool changeDifficulty, ref int money, ref int health, ref int totalEnemyCount) //här kan användaren ändra svårighets grad, se lite hur seplet fungerar och starta själva seplet
+static void UpdateGame(ref int mousePosX, ref int mousePosY, ref int wichCellMouseOn, ref int oldMouseCell, ref int cellNumber, ref bool firstTime, ref bool changeDifficulty, ref int money, ref int health, ref int totalEnemyCount, ref bool showStartMenu, ref int temp, List<CellInfoClass> cellInfoList, List<TowerStats> towerStatsList, List<BasicEnemyClass> basicEnemy, List<List<(int, int)>> path, Dictionary<string, Rectangle> startMenuButtons, int screenWidth, int screenHeight, int cellSize, int difficulty)
+//hanterar allt som ska updateras varje frame
 {
+    Raylib.ClearBackground(Color.White);
+    mousePosX = Raylib.GetMouseX();
+    mousePosY = Raylib.GetMouseY();
+    wichCellMouseOn = CordToCellNumberConverter(mousePosX, mousePosY, 50, cellInfoList);
+    CellPainter(cellInfoList, screenWidth, screenHeight, cellSize, cellNumber, firstTime);
+    BlockHigheLighter(cellInfoList, ref oldMouseCell, wichCellMouseOn);
+    PathChanger(changeDifficulty, path, cellInfoList, difficulty);
+    TowerController(basicEnemy, towerStatsList);
+    EnemyController(basicEnemy, path[difficulty], ref money, ref health);
+    cellNumber = 0;
+    firstTime = false;
+    ClickChecker(cellInfoList, wichCellMouseOn, towerStatsList, path[difficulty], ref money);
+    Raylib.DrawText("$" + money, 700, 10, 25, Color.Black);
+    Raylib.DrawText("HP: " + health, 600, 10, 25, Color.Black);
+    if (health <= 0) { showStartMenu = true; }
+    temp++;
+    if (temp == 10)
+    {
+        totalEnemyCount += (int)EnemyMaker(totalEnemyCount, basicEnemy, path, difficulty);
+        temp = 0;
+    }
+}
+static void Reset(ref int health, ref List<TowerStats> towerStatsList, ref List<BasicEnemyClass> basicEnemy, ref List<CellInfoClass> cellInfoList, ref bool firstTime, ref bool changeDifficulty, ref int cellNumber, ref int money, ref int totalEnemyCount)
+{   //resetar alla värden så man inte börjar med t.ex för mycket pengar när man kör igen
+    health = 100;
+    towerStatsList.Clear();
+    basicEnemy.Clear();
+    cellInfoList.Clear();
+    firstTime = true;
+    changeDifficulty = true;
+    cellNumber = -1;
     money = 100;
     totalEnemyCount = 0;
+}
+static void StartMenu(Dictionary<string, Rectangle> startMenuButtons, ref bool showStartMenu, ref bool showDifficultyOptions, ref int difficulty, ref bool showInfo, ref bool changeDifficulty, ref int money, ref int health, ref int totalEnemyCount) //här kan användaren ändra svårighets grad, se lite hur seplet fungerar och starta själva seplet
+{
     Raylib.ClearBackground(Color.Black);
     if (showDifficultyOptions)
     {
@@ -158,40 +166,51 @@ static void MouseButtonChecker(Dictionary<string, Rectangle> startMenuButtons, r
         if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), item.Value)) //kollar vilken knapp som musen koliderar med samt gört så man kan få ut nyckens värde, vilket gör så man kan navigera i de olika menyerna, den ändrar även dificultin om man trycker på hard, easy eller medium vilket ändrar vilken bana man sen kör på när man trycker på start
         {
             if (!showDifficultyOptions && !showInfo) //kollar så den bara funkar när rätt meny är uppe
-                switch (item.Key) //nycken värde
-                {
-                    case "start":
-                        showStartMenu = false;
-                        break;
-                    case "changeMode":
-                        showDifficultyOptions = true;
-                        break;
-                    case "info":
-                        showInfo = true;
-                        break;
-                }
+            {
+                HandleMainMenuClick(item.Key, ref showStartMenu, ref showDifficultyOptions, ref showInfo);
+            }
             else if (showDifficultyOptions && !showInfo) //-II-
             {
-                switch (item.Key)
-                {
-                    case "easy":
-                        difficulty = 0;
-                        changeDifficulty = true;
-                        showDifficultyOptions = false;
-                        break;
-                    case "medium":
-                        difficulty = 1;
-                        changeDifficulty = true;
-                        showDifficultyOptions = false;
-                        break;
-                    case "hard":
-                        difficulty = 2;
-                        changeDifficulty = true;
-                        showDifficultyOptions = false;
-                        break;
-                }
+                HandleDifficultyClick(item.Key, ref difficulty, ref changeDifficulty, ref showDifficultyOptions);
             }
         }
+    }
+}
+static void HandleMainMenuClick(string key, ref bool showStartMenu, ref bool showDifficultyOptions, ref bool showInfo)
+{ //hanterar start menyn
+    switch (key) //nycken värde
+    {
+        case "start":
+            showStartMenu = false;
+            break;
+        case "changeMode":
+            showDifficultyOptions = true;
+            break;
+        case "info":
+            showInfo = true;
+            break;
+    }
+}
+static void HandleDifficultyClick(string key, ref int difficulty, ref bool changeDifficulty, ref bool showDifficultyOptions)
+// hanterar dificulti menyn
+{
+    switch (key)
+    {
+        case "easy":
+            difficulty = 0;
+            changeDifficulty = true;
+            showDifficultyOptions = false;
+            break;
+        case "medium":
+            difficulty = 1;
+            changeDifficulty = true;
+            showDifficultyOptions = false;
+            break;
+        case "hard":
+            difficulty = 2;
+            changeDifficulty = true;
+            showDifficultyOptions = false;
+            break;
     }
 }
 static void PathChanger(bool changeDifficulty, List<List<(int, int)>> path, List<CellInfoClass> cellInfoList, int difficulty)
@@ -243,7 +262,7 @@ static void EnemyController(List<BasicEnemyClass> basicEnemy, List<(int, int)> p
         }
     }
 }
-static void TowerController(List<BasicEnemyClass> basicEnemy, List<TowerStats> towerStatsList) 
+static void TowerController(List<BasicEnemyClass> basicEnemy, List<TowerStats> towerStatsList)
 {
     for (int i = 0; i < towerStatsList.Count; i++) //går igenom alla torn och gör så de sjuter
     {
@@ -297,7 +316,7 @@ static void TowerPlacer(List<CellInfoClass> cellInfoList, int whichCellMouseOn, 
     }
 }
 //kollor om cellen är uptagen av en path tile eller om det redan är ett torn där. Om det är något på den tilen skickar den tillbacka true medans om tilen är fri sickar den true vilket gör så ett torn placeras ut (om du har 100$).
-static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList) 
+static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn, List<(int, int)> path, List<TowerStats> towerStatsList)
 {
     for (int i = 0; i < towerStatsList.Count; i++)
     {
@@ -314,7 +333,8 @@ static bool PlaceIsOcupied(List<CellInfoClass> cellInfoList, int wichCellMouseOn
         }
     }
     return false;
-}static int EnemyMaker(int totalEnemyCount, List<BasicEnemyClass> basicEnemy, List<List<(int, int)>> path, int difficulty) //skaper nya enemys och ger tillbaka hur många den har skapat så effter ett tag kan de spwna mer beroende på hur mycket den totala enemy skapande har varit
+}
+static int EnemyMaker(int totalEnemyCount, List<BasicEnemyClass> basicEnemy, List<List<(int, int)>> path, int difficulty) //skaper nya enemys och ger tillbaka hur många den har skapat så effter ett tag kan de spwna mer beroende på hur mycket den totala enemy skapande har varit
 {
     for (int i = 0; i < (int)totalEnemyCount / 150 + 1; i++) //kontrollerar hur manga fiender det ska skapas
     {
